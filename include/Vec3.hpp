@@ -20,8 +20,9 @@ class Vec3 {
         Vec3& operator*=(const double t);
         Vec3& operator/=(const double t);
 
-        double length() const;
+        bool near_zero() const;
 
+        double length() const;
         double length_squarred() const;
 
     //----------------------------------------------------------------------

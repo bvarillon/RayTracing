@@ -10,6 +10,7 @@
 #include "Sphere.hpp"
 #include "Camera.hpp"
 #include "utils.hpp"
+#include "Material.hpp"
 
 Color ray_color(const Ray &r, const Hittable& world, int depth){
     hit_record rec;
@@ -17,8 +18,13 @@ Color ray_color(const Ray &r, const Hittable& world, int depth){
     if(depth <= 0)
         return Color(0,0,0);
     if(world.hit(r,0.001,INFINITY,rec)){
-        Point3 target = rec.p+rec.normal + Vec3::random_in_unit_vector();
-        return 0.5 * ray_color(Ray(rec.p,target-rec.p), world, depth-1);
+        Ray scattered;
+        Color attenuation;
+        if(rec.mat_ptr->scatter(r, rec, attenuation, scattered))
+        {
+            return attenuation * ray_color(scattered, world, depth-1);
+        }
+        return Color(0,0,0);
     }//
     Vec3 unit_direction = unit_vector(r.direction());
     auto t = 0.5*(unit_direction.y()+ 1.0); // t \in [0.,1.] decrivant la hauteur du rayon
@@ -35,9 +41,16 @@ int main()
     const int max_depth = 50;
 
     // World
+    auto earth_mat = std::make_shared<Lanbertian>(Color(0,0.8,0.1));
+    auto center_mat = std::make_shared<Lanbertian>(Color(0.2,0.2,1));
+    auto right_mat = std::make_shared<Metal>(Color(0.7,0.7,0.7),0.4);
+    auto left_mat = std::make_shared<Metal>(Color(0.7,0.7,0.7),0.1);
+
     HittableList world;
-    world.add(std::make_shared<Sphere>(Point3(0,0,-1), 0.5));
-    world.add(std::make_shared<Sphere>(Point3(0,-100.5,-1),100));
+    world.add(std::make_shared<Sphere>(Point3(0,0,-1), 0.5, center_mat));
+    world.add(std::make_shared<Sphere>(Point3(0,-100.5,-1), 100, earth_mat));
+    world.add(std::make_shared<Sphere>(Point3(1,0,-1),0.5,right_mat));
+    world.add(std::make_shared<Sphere>(Point3(-1,0,-1),0.5,left_mat));
 
     // Camera
     Camera cam(aspect_ratio);

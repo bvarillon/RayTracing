@@ -74,6 +74,12 @@ Vec3 operator/(const Vec3& u, double t)
     return u*(1/t);
 }
 
+bool Vec3::near_zero() const
+{
+    const auto s = 1e-8;
+    return (fabs(e[0]) < s) && (fabs(e[1]) < s) && (fabs(e[2]) < s);
+}
+
 double dot(const Vec3& u, const Vec3& v)
 {
     return u.x()*v.x() + u.y()*v.y() + u.z()*v.z();
