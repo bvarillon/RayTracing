@@ -119,3 +119,12 @@ Vec3 Vec3::random_in_unit_vector()
 {
     return unit_vector(random_in_unit_sphere());
 }
+Vec3 Vec3::random_in_unit_disk()
+{
+    while(true)
+    {
+        auto p = Vec3(random_double(-1,1), random_double(-1,1),0);
+        if(p.length()>=1) continue;
+        return p;
+    }
+}

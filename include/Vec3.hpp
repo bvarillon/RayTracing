@@ -31,6 +31,7 @@ class Vec3 {
         Vec3 static random(double min, double max);
         Vec3 static random_in_unit_sphere();
         Vec3 static random_in_unit_vector();
+        Vec3 static random_in_unit_disk();
 
     private:
         double e[3];

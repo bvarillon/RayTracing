@@ -37,14 +37,14 @@ int main()
     const auto aspect_ratio = 16.0/9.0;
     const int img_width = 400;
     const int img_height = static_cast<int>(img_width / aspect_ratio);
-    const int samples = 100;
-    const int max_depth = 50;
+    const int samples = 500;
+    const int max_depth = 10;
 
     // World
     auto earth_mat = std::make_shared<Lanbertian>(Color(0,0.8,0.1));
     auto center_mat = std::make_shared<Lanbertian>(Color(0.2,0.2,1));
     auto right_mat = std::make_shared<Metal>(Color(0.7,0.7,0.7),0.4);
-    auto left_mat = std::make_shared<Metal>(Color(0.7,0.7,0.7),0.1);
+    auto left_mat = std::make_shared<Dielectric>(1.5);
 
     HittableList world;
     world.add(std::make_shared<Sphere>(Point3(0,0,-1), 0.5, center_mat));
@@ -53,7 +53,12 @@ int main()
     world.add(std::make_shared<Sphere>(Point3(-1,0,-1),0.5,left_mat));
 
     // Camera
-    Camera cam(aspect_ratio);
+    Point3 look_from = Point3(-2,2,1);
+    Point3 look_at = Point3(0,0,-1);
+    Vec3 vup = Vec3(0,1,0);
+    auto dist_to_focus = (look_from - look_at).length();
+
+    Camera cam(look_from, look_at, vup, 90, aspect_ratio,dist_to_focus,2.0);
 
     //Header of the PPM format
     std::cout << "P3" << std::endl
