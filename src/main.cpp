@@ -58,7 +58,7 @@ int main()
     Vec3 vup = Vec3(0,1,0);
     auto dist_to_focus = (look_from - look_at).length();
 
-    Camera cam(look_from, look_at, vup, 90, aspect_ratio,dist_to_focus,2.0);
+    Camera cam(look_from, look_at, vup, 90, aspect_ratio,0,dist_to_focus);
 
     //Header of the PPM format
     std::cout << "P3" << std::endl

@@ -31,7 +31,7 @@ class Camera {
             lens_radius = aperture /2;
         }
 
-        Ray get_ray(double u, double v) const;
+        Ray get_ray(double s, double t) const;
     
     private:
         Point3 origin;
