@@ -12,7 +12,7 @@
 #include "utils.hpp"
 #include "Material.hpp"
 
-Color ray_color(const Ray &r, const Hittable& world, int depth){
+Color ray_color(const Ray &r, const Hittable& world, const int depth){
     hit_record rec;
 
     if(depth <= 0)
@@ -31,34 +31,81 @@ Color ray_color(const Ray &r, const Hittable& world, int depth){
     return (1-t)*Color(1.0,1.0,1.0) + t*Color(0.5,0.7,1.0);
 }
 
+HittableList random_scene()
+{
+    HittableList world;
+
+    auto ground_material = std::make_shared<Lanbertian>(Color(.5,.5,.5));
+    world.add(std::make_shared<Sphere>(Point3(0,-1000,0), 1000, ground_material));
+
+    for (int a = -11; a < 11; a++)
+    {
+        for (int b = -11; b<11; b++)
+        {
+            auto choose_mat = random_double();
+            Point3 center(a + 0.9*random_double(), 0.2, b + 0.9*random_double());
+
+            if((center-Point3(4,0.2,0)).length() > 0.9)
+            {
+                shared_ptr<Material> sphere_material;
+
+                if (choose_mat < 0.8) {
+                    auto albedo = Color::random();
+                    sphere_material = std::make_shared<Lanbertian>(albedo);
+                } else if (choose_mat < 0.95 ) {
+                    auto albedo = Color::random(0.5,1);
+                    auto rought = random_double(0, 0.5);
+                    sphere_material = std::make_shared<Metal>(albedo, rought);
+                } else {
+                    sphere_material = std::make_shared<Dielectric>(1.5);
+                }
+                world.add(std::make_shared<Sphere>(center, 0.2, sphere_material));
+            }
+        }
+        
+    }
+    auto material1 =  std::make_shared<Dielectric>(1.5);
+    world.add(std::make_shared<Sphere>(Point3(0,1,0),1.0, material1));
+
+    auto material2 =  std::make_shared<Lanbertian>(Color(0.4,0.2,0.1));
+    world.add(std::make_shared<Sphere>(Point3(-4,1,0),1.0, material2));
+
+    auto material3 =  std::make_shared<Metal>(Color(0.7,0.6,0.5),0.0);
+    world.add(std::make_shared<Sphere>(Point3(4,1,0),1.0, material3));
+
+    return world;
+}
+
 int main()
 {
     // Img
     const auto aspect_ratio = 16.0/9.0;
     const int img_width = 400;
     const int img_height = static_cast<int>(img_width / aspect_ratio);
-    const int samples = 500;
-    const int max_depth = 10;
+    const int samples = 10;
+    const int max_depth = 5;
 
-    // World
-    auto earth_mat = std::make_shared<Lanbertian>(Color(0,0.8,0.1));
-    auto center_mat = std::make_shared<Lanbertian>(Color(0.2,0.2,1));
-    auto right_mat = std::make_shared<Metal>(Color(0.7,0.7,0.7),0.4);
-    auto left_mat = std::make_shared<Dielectric>(1.5);
+    // // World
+    // auto earth_mat = std::make_shared<Lanbertian>(Color(0,0.8,0.1));
+    // auto center_mat = std::make_shared<Lanbertian>(Color(0.2,0.2,1));
+    // auto right_mat = std::make_shared<Metal>(Color(0.7,0.7,0.7),0.4);
+    // auto left_mat = std::make_shared<Dielectric>(1.5);
 
-    HittableList world;
-    world.add(std::make_shared<Sphere>(Point3(0,0,-1), 0.5, center_mat));
-    world.add(std::make_shared<Sphere>(Point3(0,-100.5,-1), 100, earth_mat));
-    world.add(std::make_shared<Sphere>(Point3(1,0,-1),0.5,right_mat));
-    world.add(std::make_shared<Sphere>(Point3(-1,0,-1),0.5,left_mat));
+    // HittableList world;
+    // world.add(std::make_shared<Sphere>(Point3(0,0,-1), 0.5, center_mat));
+    // world.add(std::make_shared<Sphere>(Point3(0,-100.5,-1), 100, earth_mat));
+    // world.add(std::make_shared<Sphere>(Point3(1,0,-1),0.5,right_mat));
+    // world.add(std::make_shared<Sphere>(Point3(-1,0,-1),0.5,left_mat));
+
+    auto world = random_scene();
 
     // Camera
-    Point3 look_from = Point3(-2,2,1);
-    Point3 look_at = Point3(0,0,-1);
+    Point3 look_from = Point3(13,2,3);
+    Point3 look_at = Point3(0,0,0);
     Vec3 vup = Vec3(0,1,0);
     auto dist_to_focus = (look_from - look_at).length();
 
-    Camera cam(look_from, look_at, vup, 90, aspect_ratio,0,dist_to_focus);
+    Camera cam(look_from, look_at, vup, 20, aspect_ratio,0.1,dist_to_focus);
 
     //Header of the PPM format
     std::cout << "P3" << std::endl
@@ -68,19 +115,23 @@ int main()
     //Rendering the image
     for (int i=img_height-1; i>=0; i--)
     {
-        std::cerr << "\rScanlines remaining:" << i << ' ' << std::flush;
+        std::cerr << "\rWorking:" << (int) (float(img_height-i)/img_height*100) << std::flush;
         for(int j=0; j<img_width; j++)
         {
-            Color pixel(0,0,0);
-            for(int s=0;s<samples;s++)
-            {
-                auto u = double(j+random_double()) / (img_width-1);
-                auto v = double(i+random_double()) / (img_height-1);
+            auto fn = [&](){
+                Color pixel(0,0,0);
+                for(int s=0;s<samples;s++)
+                {
+                    auto u = double(j+random_double()) / (img_width-1);
+                    auto v = double(i+random_double()) / (img_height-1);
 
-                Ray r = cam.get_ray(u,v);
-                pixel += ray_color(r,world, max_depth);
-            }
-            write_color(std::cout,pixel,samples);
+                    Ray r = cam.get_ray(u,v);
+                    pixel += ray_color(r,world, max_depth);
+                }
+                return pixel;
+            };
+            write_color(std::cout,fn(),samples);
+            // write_color(std::cout,pixel,samples);
 
         }
     }
