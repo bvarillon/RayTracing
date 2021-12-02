@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <memory>
+#include <future>
 
 #include "Color.hpp"
 #include "Point3.hpp"
@@ -82,8 +83,8 @@ int main()
     const auto aspect_ratio = 16.0/9.0;
     const int img_width = 400;
     const int img_height = static_cast<int>(img_width / aspect_ratio);
-    const int samples = 10;
-    const int max_depth = 5;
+    const int samples = 100;
+    const int max_depth = 10;
 
     // // World
     // auto earth_mat = std::make_shared<Lanbertian>(Color(0,0.8,0.1));
@@ -107,6 +108,12 @@ int main()
 
     Camera cam(look_from, look_at, vup, 20, aspect_ratio,0.1,dist_to_focus);
 
+    
+    auto nb_threads = std::thread::hardware_concurrency();
+    // auto nb_threads = 1;
+    
+    std::cerr << "compute " << samples << " samples in " << nb_threads << " threads" << std::endl;
+    // std::cerr << "samples per thread " << sample_per_thread << ", sample residue " << samples_r << std::endl;
     //Header of the PPM format
     std::cout << "P3" << std::endl
               << img_width << ' ' << img_height << std::endl
@@ -118,9 +125,9 @@ int main()
         std::cerr << "\rWorking:" << (int) (float(img_height-i)/img_height*100) << std::flush;
         for(int j=0; j<img_width; j++)
         {
-            auto fn = [&](){
+            auto fn = [&](int smpls){
                 Color pixel(0,0,0);
-                for(int s=0;s<samples;s++)
+                for(int s=0;s<smpls;s++)
                 {
                     auto u = double(j+random_double()) / (img_width-1);
                     auto v = double(i+random_double()) / (img_height-1);
@@ -130,9 +137,22 @@ int main()
                 }
                 return pixel;
             };
-            write_color(std::cout,fn(),samples);
-            // write_color(std::cout,pixel,samples);
 
+            auto sample_per_thread = samples / nb_threads +1;
+            auto samples_r = samples % nb_threads;
+
+            std::vector<std::future<Color>> threads(nb_threads);
+            for (int k=0; k<nb_threads ; k++){
+                if (samples_r-- == 0) sample_per_thread--;
+                // std::cerr << "thread " << k << " : " << sample_per_thread << " samples" << std::endl;
+                threads[k] = std::async(fn, sample_per_thread);
+            }
+            Color pixel(0,0,0);
+            for(auto& th : threads)
+            {
+                pixel += th.get();
+            }
+            write_color(std::cout,pixel,samples);
         }
     }
     std::cerr << std::endl << "Done !" << std::endl;
