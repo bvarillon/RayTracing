@@ -81,10 +81,10 @@ int main()
 {
     // Img
     const auto aspect_ratio = 16.0/9.0;
-    const int img_width = 400;
+    const int img_width = 1000;
     const int img_height = static_cast<int>(img_width / aspect_ratio);
-    const int samples = 50;
-    const int max_depth = 5;
+    const int samples = 500;
+    const int max_depth = 10;
 
     // // World
     // auto earth_mat = std::make_shared<Lambertian>(Color(0,0.8,0.1));
@@ -108,7 +108,6 @@ int main()
 
     Camera cam(look_from, look_at, vup, 20, aspect_ratio,0.1,dist_to_focus);
 
-    
     auto nb_threads = std::thread::hardware_concurrency();
     // auto nb_threads = 1;
     
@@ -118,14 +117,16 @@ int main()
     // std::cout << "P3" << std::endl
     //           << img_width << ' ' << img_height << std::endl
     //           << "255" << std::endl;
-
     //Rendering the image
     Color img[img_height*img_width];
+    std::atomic<int> k(0);
+
     auto fn = [&](int thread){
         for (int i=img_height-1-thread; i>=0; i -=  nb_threads)
         // for (int i=0; i<img_height; i++)
         {
-            // std::cerr << "\rWorking:" << (int) (float(img_height-i)/img_height*100) << std::flush;
+            k++;
+            std::cerr << "\rWorking:" << (int) (float(k)/img_height*100) << std::flush;
             for(int j=0; j<img_width; j++)
             {
                     Color pixel(0,0,0);
@@ -139,7 +140,6 @@ int main()
                     }
 
                 img[(img_height-1-i)*img_width+j] = pixel;
-                // write_color(std::cout,pixel,samples);
             }
         }
     };
@@ -153,6 +153,7 @@ int main()
     {
         th.get();
     }
+    std::cerr << std::endl;
     write_image(std::cout, img, img_width, img_height, samples);
     std::cerr << std::endl << "Done !" << std::endl;
 }
