@@ -17,3 +17,15 @@ void write_color(std::ostream &out, const Color& color, int samples)
         << static_cast<int>(255.999*b) << ' '
         << std::endl;
 }
+
+void write_image(std::ostream &out, const Color img[] , int width, int height, int samples)
+{
+    std::cerr << "Writing img" << std::endl;
+    out << "P3" << std::endl
+        << width << ' ' << height << std::endl
+        << "255" << std::endl;
+        for(int i=0; i<width*height; i++)
+        {
+            write_color(out, img[i], samples);
+        }
+}

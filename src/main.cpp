@@ -81,10 +81,10 @@ int main()
 {
     // Img
     const auto aspect_ratio = 16.0/9.0;
-    const int img_width = 1920;
+    const int img_width = 400;
     const int img_height = static_cast<int>(img_width / aspect_ratio);
-    const int samples = 500;
-    const int max_depth = 10;
+    const int samples = 50;
+    const int max_depth = 5;
 
     // // World
     // auto earth_mat = std::make_shared<Lambertian>(Color(0,0.8,0.1));
@@ -115,45 +115,44 @@ int main()
     std::cerr << "compute " << samples << " samples in " << nb_threads << " threads" << std::endl;
     // std::cerr << "samples per thread " << sample_per_thread << ", sample residue " << samples_r << std::endl;
     //Header of the PPM format
-    std::cout << "P3" << std::endl
-              << img_width << ' ' << img_height << std::endl
-              << "255" << std::endl;
+    // std::cout << "P3" << std::endl
+    //           << img_width << ' ' << img_height << std::endl
+    //           << "255" << std::endl;
 
     //Rendering the image
-    for (int i=img_height-1; i>=0; i--)
-    {
-        std::cerr << "\rWorking:" << (int) (float(img_height-i)/img_height*100) << std::flush;
-        for(int j=0; j<img_width; j++)
+    Color img[img_height*img_width];
+    auto fn = [&](int thread){
+        for (int i=img_height-1-thread; i>=0; i -=  nb_threads)
+        // for (int i=0; i<img_height; i++)
         {
-            auto fn = [&](int smpls){
-                Color pixel(0,0,0);
-                for(int s=0;s<smpls;s++)
-                {
-                    auto u = double(j+random_double()) / (img_width-1);
-                    auto v = double(i+random_double()) / (img_height-1);
-
-                    Ray r = cam.get_ray(u,v);
-                    pixel += ray_color(r,world, max_depth);
-                }
-                return pixel;
-            };
-
-            auto sample_per_thread = samples / nb_threads +1;
-            auto samples_r = samples % nb_threads;
-
-            std::vector<std::future<Color>> threads(nb_threads);
-            for (int k=0; k<nb_threads ; k++){
-                if (samples_r-- == 0) sample_per_thread--;
-                // std::cerr << "thread " << k << " : " << sample_per_thread << " samples" << std::endl;
-                threads[k] = std::async(fn, sample_per_thread);
-            }
-            Color pixel(0,0,0);
-            for(auto& th : threads)
+            // std::cerr << "\rWorking:" << (int) (float(img_height-i)/img_height*100) << std::flush;
+            for(int j=0; j<img_width; j++)
             {
-                pixel += th.get();
+                    Color pixel(0,0,0);
+                    for(int s=0;s<samples;s++)
+                    {
+                        auto u = double(j+random_double()) / (img_width-1);
+                        auto v = double(i+random_double()) / (img_height-1);
+
+                        Ray r = cam.get_ray(u,v);
+                        pixel += ray_color(r,world, max_depth);
+                    }
+
+                img[(img_height-1-i)*img_width+j] = pixel;
+                // write_color(std::cout,pixel,samples);
             }
-            write_color(std::cout,pixel,samples);
         }
+    };
+
+    std::vector<std::future<void>> threads(nb_threads);
+    for (int k=0; k<nb_threads ; k++){
+        // std::cerr << "thread " << k << " : " << sample_per_thread << " samples" << std::endl;
+        threads[k] = std::async(fn, k);
     }
+    for(auto& th : threads)
+    {
+        th.get();
+    }
+    write_image(std::cout, img, img_width, img_height, samples);
     std::cerr << std::endl << "Done !" << std::endl;
 }
