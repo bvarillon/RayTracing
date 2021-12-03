@@ -36,7 +36,7 @@ HittableList random_scene()
 {
     HittableList world;
 
-    auto ground_material = std::make_shared<Lanbertian>(Color(.5,.5,.5));
+    auto ground_material = std::make_shared<Lambertian>(Color(.5,.5,.5));
     world.add(std::make_shared<Sphere>(Point3(0,-1000,0), 1000, ground_material));
 
     for (int a = -11; a < 11; a++)
@@ -52,7 +52,7 @@ HittableList random_scene()
 
                 if (choose_mat < 0.8) {
                     auto albedo = Color::random();
-                    sphere_material = std::make_shared<Lanbertian>(albedo);
+                    sphere_material = std::make_shared<Lambertian>(albedo);
                 } else if (choose_mat < 0.95 ) {
                     auto albedo = Color::random(0.5,1);
                     auto rought = random_double(0, 0.5);
@@ -68,7 +68,7 @@ HittableList random_scene()
     auto material1 =  std::make_shared<Dielectric>(1.5);
     world.add(std::make_shared<Sphere>(Point3(0,1,0),1.0, material1));
 
-    auto material2 =  std::make_shared<Lanbertian>(Color(0.4,0.2,0.1));
+    auto material2 =  std::make_shared<Lambertian>(Color(0.4,0.2,0.1));
     world.add(std::make_shared<Sphere>(Point3(-4,1,0),1.0, material2));
 
     auto material3 =  std::make_shared<Metal>(Color(0.7,0.6,0.5),0.0);
@@ -81,14 +81,14 @@ int main()
 {
     // Img
     const auto aspect_ratio = 16.0/9.0;
-    const int img_width = 400;
+    const int img_width = 1920;
     const int img_height = static_cast<int>(img_width / aspect_ratio);
-    const int samples = 100;
+    const int samples = 500;
     const int max_depth = 10;
 
     // // World
-    // auto earth_mat = std::make_shared<Lanbertian>(Color(0,0.8,0.1));
-    // auto center_mat = std::make_shared<Lanbertian>(Color(0.2,0.2,1));
+    // auto earth_mat = std::make_shared<Lambertian>(Color(0,0.8,0.1));
+    // auto center_mat = std::make_shared<Lambertian>(Color(0.2,0.2,1));
     // auto right_mat = std::make_shared<Metal>(Color(0.7,0.7,0.7),0.4);
     // auto left_mat = std::make_shared<Dielectric>(1.5);
 

@@ -38,10 +38,10 @@ Vec3 refract(const Vec3& u, const Vec3& n, double ratio)
     return r_out_par + r_out_perp;
 }
 
-class Lanbertian : public Material
+class Lambertian : public Material
 {
     public:
-        Lanbertian(const Color& a): albedo(a){}
+        Lambertian(const Color& a): albedo(a){}
 
         virtual bool scatter(const Ray& r_in, const hit_record& rec, Color& attenuation, Ray& scattered) const override
         {
