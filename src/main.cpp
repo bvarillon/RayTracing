@@ -80,11 +80,11 @@ HittableList random_scene()
 int main()
 {
     // Img
-    const auto aspect_ratio = 16.0/9.0;
-    const int img_width = 1000;
+    const auto aspect_ratio = 3.0/2.0;
+    const int img_width = 1200;
     const int img_height = static_cast<int>(img_width / aspect_ratio);
     const int samples = 500;
-    const int max_depth = 10;
+    const int max_depth = 50;
 
     // // World
     // auto earth_mat = std::make_shared<Lambertian>(Color(0,0.8,0.1));
@@ -104,9 +104,11 @@ int main()
     Point3 look_from = Point3(13,2,3);
     Point3 look_at = Point3(0,0,0);
     Vec3 vup = Vec3(0,1,0);
-    auto dist_to_focus = (look_from - look_at).length();
+    // auto dist_to_focus = (look_from - look_at).length();
+    auto dist_to_focus = 10;
+    auto aperture = 0.1;
 
-    Camera cam(look_from, look_at, vup, 20, aspect_ratio,0.1,dist_to_focus);
+    Camera cam(look_from, look_at, vup, 20, aspect_ratio,aperture,dist_to_focus);
 
     auto nb_threads = std::thread::hardware_concurrency();
     // auto nb_threads = 1;
@@ -118,7 +120,8 @@ int main()
     //           << img_width << ' ' << img_height << std::endl
     //           << "255" << std::endl;
     //Rendering the image
-    Color img[img_height*img_width];
+    // Color img[img_height*img_width];
+    Color* img = new Color[img_height*img_width];
     std::atomic<int> k(0);
 
     auto fn = [&](int thread){
