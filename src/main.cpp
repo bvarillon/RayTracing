@@ -18,6 +18,7 @@ Color ray_color(const Ray &r, const Hittable& world, const int depth){
 
     if(depth <= 0)
         return Color(0,0,0);
+
     if(world.hit(r,0.001,INFINITY,rec)){
         Ray scattered;
         Color attenuation;
@@ -26,7 +27,7 @@ Color ray_color(const Ray &r, const Hittable& world, const int depth){
             return attenuation * ray_color(scattered, world, depth-1);
         }
         return Color(0,0,0);
-    }//
+    }
     Vec3 unit_direction = unit_vector(r.direction());
     auto t = 0.5*(unit_direction.y()+ 1.0); // t \in [0.,1.] decrivant la hauteur du rayon
     return (1-t)*Color(1.0,1.0,1.0) + t*Color(0.5,0.7,1.0);
@@ -81,10 +82,10 @@ int main()
 {
     // Img
     const auto aspect_ratio = 3.0/2.0;
-    const int img_width = 1200;
+    const int img_width = 400;
     const int img_height = static_cast<int>(img_width / aspect_ratio);
-    const int samples = 500;
-    const int max_depth = 50;
+    const int samples = 200;
+    const int max_depth = 10;
 
     // // World
     // auto earth_mat = std::make_shared<Lambertian>(Color(0,0.8,0.1));
@@ -108,7 +109,7 @@ int main()
     auto dist_to_focus = 10;
     auto aperture = 0.1;
 
-    Camera cam(look_from, look_at, vup, 20, aspect_ratio,aperture,dist_to_focus);
+    Camera cam(look_from, look_at, vup, 20, aspect_ratio, aperture, dist_to_focus);
 
     auto nb_threads = std::thread::hardware_concurrency();
     // auto nb_threads = 1;
@@ -124,8 +125,8 @@ int main()
     Color* img = new Color[img_height*img_width];
     std::atomic<int> k(0);
 
-    auto fn = [&](int thread){
-        for (int i=img_height-1-thread; i>=0; i -=  nb_threads)
+    auto fn = [&](const int THREAD){
+        for (int i=img_height-1-THREAD; i>=0; i -=  nb_threads)
         // for (int i=0; i<img_height; i++)
         {
             k++;

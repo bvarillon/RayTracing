@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "utils.hpp"
+
 void write_color(std::ostream &out, const Color& color, int samples)
 {
     auto r = color.x();
@@ -12,9 +14,9 @@ void write_color(std::ostream &out, const Color& color, int samples)
     g = std::sqrt(g / samples);
     b = std::sqrt(b / samples);
 
-    out << static_cast<int>(255.999*r) << ' '
-        << static_cast<int>(255.999*g) << ' '
-        << static_cast<int>(255.999*b) << ' '
+    out << static_cast<int>(256 * clamp(r, 0.0, 0.999)) << ' '
+        << static_cast<int>(256 * clamp(g, 0.0, 0.999)) << ' '
+        << static_cast<int>(256 * clamp(b, 0.0, 0.999)) << ' '
         << std::endl;
 }
 
