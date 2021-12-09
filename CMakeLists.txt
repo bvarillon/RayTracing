@@ -13,7 +13,9 @@ add_executable(RayTracing src/main.cpp
                           src/Camera.cpp
                           src/utils.cpp
                           src/Color.cpp)
+if(UNIX)
 target_link_libraries(RayTracing pthread)
+endif(UNIX)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
