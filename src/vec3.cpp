@@ -123,8 +123,8 @@ Vec3 Vec3::random_in_unit_disk()
 {
     while(true)
     {
-        auto p = Vec3(random_double(-1,1), random_double(-1,1),0);
-        if(p.length()>=1) continue;
+        auto p = Vec3(random_double(-1,1), random_double(-1,1), 0);
+        if(p.length_squarred() >= 1) continue;
         return p;
     }
 }

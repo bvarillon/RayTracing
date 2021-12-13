@@ -41,7 +41,8 @@ class Lambertian : public Material
 
         virtual bool scatter(const Ray& r_in, const hit_record& rec, Color& attenuation, Ray& scattered) const override
         {
-            auto scatter_direction = rec.normal + Vec3::random_unit_vector();
+            // auto scatter_direction = rec.normal + Vec3::random_unit_vector();
+            auto scatter_direction = rec.normal + Vec3::random_in_unit_sphere();
             if(scatter_direction.near_zero())
                 scatter_direction = rec.normal;
 

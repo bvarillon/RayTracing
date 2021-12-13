@@ -33,5 +33,6 @@
 
 build/
 *.ppm
+*.jpg
 
 .vscode/

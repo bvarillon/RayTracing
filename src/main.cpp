@@ -13,7 +13,7 @@
 #include "utils.hpp"
 #include "Material.hpp"
 
-Color ray_color(const Ray &r, const Hittable& world, const int depth){
+Color ray_color(const Ray &r, const Hittable& world, int depth){
     hit_record rec;
 
     if(depth <= 0)
@@ -52,7 +52,7 @@ HittableList random_scene()
                 shared_ptr<Material> sphere_material;
 
                 if (choose_mat < 0.8) {
-                    auto albedo = Color::random();
+                    auto albedo = Color::random() * Color::random();
                     sphere_material = std::make_shared<Lambertian>(albedo);
                 } else if (choose_mat < 0.95 ) {
                     auto albedo = Color::random(0.5,1);
@@ -81,53 +81,53 @@ HittableList random_scene()
 int main()
 {
     // Img
-    const auto aspect_ratio = 3.0/2.0;
-    const int img_width = 400;
+    const auto aspect_ratio = 4.0/3.0;
+    const int img_width = 500;
     const int img_height = static_cast<int>(img_width / aspect_ratio);
-    const int samples = 200;
-    const int max_depth = 10;
+    const int samples = 100;
+    const int max_depth = 50;
 
     // // World
     // auto earth_mat = std::make_shared<Lambertian>(Color(0,0.8,0.1));
     // auto center_mat = std::make_shared<Lambertian>(Color(0.2,0.2,1));
     // auto right_mat = std::make_shared<Metal>(Color(0.7,0.7,0.7),0.4);
     // auto left_mat = std::make_shared<Dielectric>(1.5);
+    // auto mat = std::make_shared<Lambertian>(Color(0.8,0.2,0.5));
 
     // HittableList world;
     // world.add(std::make_shared<Sphere>(Point3(0,0,-1), 0.5, center_mat));
     // world.add(std::make_shared<Sphere>(Point3(0,-100.5,-1), 100, earth_mat));
     // world.add(std::make_shared<Sphere>(Point3(1,0,-1),0.5,right_mat));
     // world.add(std::make_shared<Sphere>(Point3(-1,0,-1),0.5,left_mat));
+    // world.add(std::make_shared<Sphere>(Point3(0,0,0.5),0.5,mat));
 
     auto world = random_scene();
 
     // Camera
-    Point3 look_from = Point3(13,2,3);
+    Point3 look_from = Point3(10,5,3);
     Point3 look_at = Point3(0,0,0);
     Vec3 vup = Vec3(0,1,0);
-    // auto dist_to_focus = (look_from - look_at).length();
-    auto dist_to_focus = 10;
+    auto dist_to_focus = (look_from - look_at).length();
+    // auto dist_to_focus = 10;
     auto aperture = 0.1;
 
-    Camera cam(look_from, look_at, vup, 20, aspect_ratio, aperture, dist_to_focus);
+    Camera cam(look_from, look_at, vup, 15, aspect_ratio, aperture, dist_to_focus);
 
     auto nb_threads = std::thread::hardware_concurrency();
     // auto nb_threads = 1;
     
     std::cerr << "compute " << samples << " samples in " << nb_threads << " threads" << std::endl;
-    // std::cerr << "samples per thread " << sample_per_thread << ", sample residue " << samples_r << std::endl;
+
     //Header of the PPM format
     // std::cout << "P3" << std::endl
     //           << img_width << ' ' << img_height << std::endl
     //           << "255" << std::endl;
     //Rendering the image
-    // Color img[img_height*img_width];
     Color* img = new Color[img_height*img_width];
     std::atomic<int> k(0);
 
     auto fn = [&](const int THREAD){
         for (int i=img_height-1-THREAD; i>=0; i -=  nb_threads)
-        // for (int i=0; i<img_height; i++)
         {
             k++;
             std::cerr << "\rWorking:" << (int) (float(k)/img_height*100) << std::flush;
@@ -144,6 +144,7 @@ int main()
                     }
 
                 img[(img_height-1-i)*img_width+j] = pixel;
+                // write_color(std::cout,pixel,samples);
             }
         }
     };
