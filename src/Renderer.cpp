@@ -30,7 +30,7 @@ Color ray_color(const Ray &r, const Hittable& world, int depth){
     return (1.-t)*Color(1.0,1.0,1.0) + t*Color(0.5,0.7,1.0);
 }
 
-Color* Renderer::run(double aspect_ratio, int img_width, int samples, int max_depth, int nb_threads)
+Color* Renderer::run(double aspect_ratio, int img_width, int samples, int max_depth, int nb_threads, std::ostream &log)
 {
     const int img_height = static_cast<int>(img_width / aspect_ratio);
 
@@ -39,7 +39,7 @@ Color* Renderer::run(double aspect_ratio, int img_width, int samples, int max_de
         nb_threads = std::thread::hardware_concurrency();
     }
 
-    std::cerr << "compute " << samples << " samples in " << nb_threads << " threads" << std::endl;
+    log << "compute " << samples << " samples in " << nb_threads << " threads" << std::endl;
 
 
     Color* img = new Color[img_height*img_width];
@@ -49,7 +49,7 @@ Color* Renderer::run(double aspect_ratio, int img_width, int samples, int max_de
         for (int i=img_height-1-THREAD; i>=0; i -=  nb_threads)
         {
             k++;
-            std::cerr << "\rWorking:" << (int) (float(k)/img_height*100) << std::flush;
+            log << "\rWorking:" << (int) (float(k)/img_height*100) << std::flush;
             for(int j=0; j<img_width; j++)
             {
                     Color pixel(0,0,0);
@@ -62,22 +62,21 @@ Color* Renderer::run(double aspect_ratio, int img_width, int samples, int max_de
                         pixel += ray_color(r,scene_, max_depth);
                     }
 
-                img[(img_height-1-i)*img_width+j] = pixel;
-                // write_color(std::cout,pixel,samples);
+                img[(img_height-1-i)*img_width+j] = pixel/samples;
             }
         }
     };
 
     std::vector<std::future<void>> threads(nb_threads);
     for (int k=0; k<nb_threads ; k++){
-        // std::cerr << "thread " << k << " : " << sample_per_thread << " samples" << std::endl;
+        // log << "thread " << k << " : " << sample_per_thread << " samples" << std::endl;
         threads[k] = std::async(fn, k);
     }
     for(auto& th : threads)
     {
         th.get();
     }
-    std::cerr << std::endl;
+    log << std::endl << " Done !" << std::endl;
 
     return img;
 }

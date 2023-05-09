@@ -61,10 +61,10 @@ int main()
 {
     // Img
     const auto aspect_ratio = 4.0/3.0;
-    const int img_width = 500;
+    const int img_width = 800;
     const int img_height = static_cast<int>(img_width / aspect_ratio);
     const int samples = 50;
-    const int max_depth = 25;
+    const int max_depth = 5;
 
 
     // // World
@@ -87,20 +87,22 @@ int main()
     Point3 look_from = Point3(10,5,3);
     Point3 look_at = Point3(0,0,0);
     Vec3 vup = Vec3(0,1,0);
-    // auto dist_to_focus = (look_from - look_at).length();
-    auto dist_to_focus = 10;
+    auto dist_to_focus = (look_from - look_at).length();
+    // auto dist_to_focus = 10;
     auto aperture = 1;
 
     Camera cam(look_from, look_at, vup, 15, aspect_ratio, aperture, dist_to_focus);
 
 
     Renderer renderer(cam,world);
-    auto render = renderer.run(aspect_ratio, img_width, samples, max_depth, std::thread::hardware_concurrency());
+    auto render = renderer.run(aspect_ratio, img_width, samples, max_depth, std::thread::hardware_concurrency()-1);
 
     auto img = render;
 
-    write_image(std::cout, img, img_width, img_height, samples);
-    std::cerr << std::endl << "Done !" << std::endl;
+    // write_image(std::cout, img, img_width, img_height);
+    std::cout << "Saving file...";
+    write_image_to_file(img, img_width, img_height,"test_e.jpg");
+    std::cout << " Done !" << std::endl;
 
     delete img;
 }

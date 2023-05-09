@@ -1,13 +1,8 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.1.0)
 project(RayTracing VERSION 0.1.0)
 
 
-# include(CTest)
-# enable_testing()
-
-set(THIRD_PARTY_SOURCES
-    ./third_party/stb_image_write.cpp
-    ./third_party/stb_image_write.hpp)
+add_subdirectory(third_party)
 
 include_directories(include)
 add_executable(RayTracing src/main.cpp
@@ -23,6 +18,8 @@ if(UNIX)
 target_link_libraries(RayTracing pthread)
 endif(UNIX)
 
-# set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-# set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-include(CPack)
+# target_link_libraries(RayTracing ThirdParty)
+target_link_libraries(RayTracing StbImageWrite)
+
+install(TARGETS RayTracing
+        DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin)
