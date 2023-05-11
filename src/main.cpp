@@ -2,6 +2,7 @@
 #include <cmath>
 #include <memory>
 #include <future>
+#include <fstream>
 
 #include "Color.hpp"
 #include "Point3.hpp"
@@ -11,6 +12,9 @@
 #include "utils.hpp"
 #include "Material.hpp"
 #include "Renderer.hpp"
+
+#include "nlohmann/json.hpp"
+using json = nlohmann::json;
 
 HittableList random_scene()
 {
@@ -59,12 +63,18 @@ HittableList random_scene()
 
 int main()
 {
-    // Img
-    const auto aspect_ratio = 4.0/3.0;
-    const int img_width = 800;
-    const int img_height = static_cast<int>(img_width / aspect_ratio);
-    const int samples = 50;
-    const int max_depth = 5;
+    std::ifstream confFile("conf.json");
+    json conf;
+    confFile >> conf;
+    
+    const  int img_width = conf.value("width",800);
+    const  int img_height = conf.value("height",600);
+    const  int samples = conf.value("samples",50);
+    const  int max_depth = conf.value("depth",5);
+
+    const auto aspect_ratio = static_cast<double>(img_width)/static_cast<double>(img_height);
+
+    std::cout << img_width << " " << img_height << " " << samples << " " << max_depth << " " << aspect_ratio << std::endl;
 
 
     // // World
@@ -94,15 +104,16 @@ int main()
     Camera cam(look_from, look_at, vup, 15, aspect_ratio, aperture, dist_to_focus);
 
 
-    Renderer renderer(cam,world);
-    auto render = renderer.run(aspect_ratio, img_width, samples, max_depth, std::thread::hardware_concurrency()-1);
+    // Renderer renderer(cam,world);
+    // auto render = renderer.run(aspect_ratio, img_width, samples, max_depth, std::thread::hardware_concurrency()-1);
 
-    auto img = render;
+    // auto img = render;
 
-    // write_image(std::cout, img, img_width, img_height);
-    std::cout << "Saving file...";
-    write_image_to_file(img, img_width, img_height,"test_e.jpg");
-    std::cout << " Done !" << std::endl;
+    // // write_image(std::cout, img, img_width, img_height);
+    // std::cout << "Saving file...";
+    // write_image_to_file(img, img_width, img_height,"test_e.jpg");
+    // std::cout << " Done !" << std::endl;
 
-    delete img;
+    // delete img;
+
 }
