@@ -4,6 +4,7 @@ project(RayTracing VERSION 0.1.0)
 
 add_subdirectory(third_party/stb_image_write)
 add_subdirectory(third_party/nlohmann)
+add_subdirectory(third_party/cxxopts)
 
 include_directories(include)
 add_executable(RayTracing src/main.cpp
@@ -19,7 +20,7 @@ if(UNIX)
 target_link_libraries(RayTracing pthread)
 endif(UNIX)
 
-target_link_libraries(RayTracing StbImageWrite Nlohmann)
+target_link_libraries(RayTracing StbImageWrite Nlohmann cxxopts)
 
 install(TARGETS RayTracing
         DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin)

@@ -16,6 +16,8 @@
 #include "nlohmann/json.hpp"
 using json = nlohmann::json;
 
+#include "cxxopts.hpp"
+
 HittableList random_scene()
 {
     HittableList world;
@@ -61,8 +63,20 @@ HittableList random_scene()
     return world;
 }
 
-int main()
+int main(int argc, char* argv[])
 {
+    cxxopts::Options option("Raytracing");
+    option.add_options()
+    ("v,version", "Print the version", cxxopts::value<bool>()->default_value("false"))
+    ;
+    auto result = option.parse(argc,argv);
+
+    if (result["version"].as<bool>())
+    {
+        std::cout << "RayTracing - v0.0.0" << std::endl;
+        exit(EXIT_SUCCESS);
+    }
+
     std::ifstream confFile("conf.json");
     json conf;
     confFile >> conf;
