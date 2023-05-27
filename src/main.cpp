@@ -91,9 +91,8 @@ int main(int argc, char* argv[])
 
     Camera cam(look_from, look_at, vup, 15, params.aspect_ratio, aperture, dist_to_focus);
 
-
     Renderer renderer(cam,world);
-    auto render = renderer.run(params.aspect_ratio, params.img_width, params.samples, params.max_depth, std::thread::hardware_concurrency()-1);
+    auto render = renderer.run(params.img_height, params.img_width, params.samples, params.max_depth, std::thread::hardware_concurrency()-1);
 
     auto img = render;
 

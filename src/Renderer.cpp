@@ -10,6 +10,8 @@
 #include "utils.hpp"
 #include "Material.hpp"
 
+using namespace std::chrono_literals;
+
 Color ray_color(const Ray &r, const Hittable& world, int depth){
     hit_record rec;
 
@@ -30,10 +32,8 @@ Color ray_color(const Ray &r, const Hittable& world, int depth){
     return (1.-t)*Color(1.0,1.0,1.0) + t*Color(0.5,0.7,1.0);
 }
 
-Color* Renderer::run(double aspect_ratio, int img_width, int samples, int max_depth, int nb_threads, std::ostream &log)
+Color* Renderer::run(int img_height, int img_width, int samples, int max_depth, int nb_threads, std::ostream &log)
 {
-    const int img_height = static_cast<int>(img_width / aspect_ratio);
-
     if(nb_threads <= 0)
     {
         nb_threads = std::thread::hardware_concurrency();
@@ -48,8 +48,6 @@ Color* Renderer::run(double aspect_ratio, int img_width, int samples, int max_de
     auto fn = [&](const int THREAD){
         for (int i=img_height-1-THREAD; i>=0; i -=  nb_threads)
         {
-            k++;
-            log << "\rWorking:" << (int) (float(k)/img_height*100) << std::flush;
             for(int j=0; j<img_width; j++)
             {
                     Color pixel(0,0,0);
@@ -64,18 +62,27 @@ Color* Renderer::run(double aspect_ratio, int img_width, int samples, int max_de
 
                 img[(img_height-1-i)*img_width+j] = pixel/samples;
             }
+            k++;
         }
     };
 
     std::vector<std::future<void>> threads(nb_threads);
-    for (int k=0; k<nb_threads ; k++){
+    for (int n=0; n<nb_threads ; n++){
         // log << "thread " << k << " : " << sample_per_thread << " samples" << std::endl;
-        threads[k] = std::async(fn, k);
+        threads[n] = std::async(fn, n);
     }
+
+    while (k < img_height)
+    {
+        log << "\rWorking:" << (int) (float(k)/img_height*100) << std::flush;
+        std::this_thread::sleep_for(500ms);
+    }
+    log << "\rWorking:" << (int) (float(k)/img_height*100) << std::flush;
+
     for(auto& th : threads)
     {
         th.get();
-    }
+    }  
     log << std::endl << " Done !" << std::endl;
 
     return img;
