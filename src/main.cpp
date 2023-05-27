@@ -12,22 +12,19 @@
 #include "utils.hpp"
 #include "Material.hpp"
 #include "Renderer.hpp"
+#include "Arguments.hpp"
 
-#include "nlohmann/json.hpp"
-using json = nlohmann::json;
 
-#include "cxxopts.hpp"
-
-HittableList random_scene()
+HittableList random_scene(int size)
 {
     HittableList world;
 
     auto ground_material = std::make_shared<Lambertian>(Color(.5,.5,.5));
     world.add(std::make_shared<Sphere>(Point3(0,-1000,0), 1000, ground_material));
 
-    for (int a = -11; a < 11; a++)
+    for (int a = -size; a < size; a++)
     {
-        for (int b = -11; b<11; b++)
+        for (int b = -size; b<size; b++)
         {
             auto choose_mat = random_double();
             Point3 center(a + 0.9*random_double(), 0.2, b + 0.9*random_double());
@@ -65,31 +62,8 @@ HittableList random_scene()
 
 int main(int argc, char* argv[])
 {
-    cxxopts::Options option("Raytracing");
-    option.add_options()
-    ("v,version", "Print the version", cxxopts::value<bool>()->default_value("false"))
-    ;
-    auto result = option.parse(argc,argv);
-
-    if (result["version"].as<bool>())
-    {
-        std::cout << "RayTracing - v0.0.0" << std::endl;
-        exit(EXIT_SUCCESS);
-    }
-
-    std::ifstream confFile("conf.json");
-    json conf;
-    confFile >> conf;
     
-    const  int img_width = conf.value("width",800);
-    const  int img_height = conf.value("height",600);
-    const  int samples = conf.value("samples",50);
-    const  int max_depth = conf.value("depth",5);
-
-    const auto aspect_ratio = static_cast<double>(img_width)/static_cast<double>(img_height);
-
-    std::cout << img_width << " " << img_height << " " << samples << " " << max_depth << " " << aspect_ratio << std::endl;
-
+    auto params = pars_args(argc, argv);
 
     // // World
     // auto earth_mat = std::make_shared<Lambertian>(Color(0,0.8,0.1));
@@ -105,7 +79,7 @@ int main(int argc, char* argv[])
     // world.add(std::make_shared<Sphere>(Point3(-1,0,-1),0.5,left_mat));
     // world.add(std::make_shared<Sphere>(Point3(0,0,0.5),0.5,mat));
 
-    auto world = random_scene();
+    auto world = random_scene(params.size);
 
     // Camera
     Point3 look_from = Point3(10,5,3);
@@ -115,19 +89,20 @@ int main(int argc, char* argv[])
     // auto dist_to_focus = 10;
     auto aperture = 1;
 
-    Camera cam(look_from, look_at, vup, 15, aspect_ratio, aperture, dist_to_focus);
+    Camera cam(look_from, look_at, vup, 15, params.aspect_ratio, aperture, dist_to_focus);
 
 
-    // Renderer renderer(cam,world);
-    // auto render = renderer.run(aspect_ratio, img_width, samples, max_depth, std::thread::hardware_concurrency()-1);
+    Renderer renderer(cam,world);
+    auto render = renderer.run(params.aspect_ratio, params.img_width, params.samples, params.max_depth, std::thread::hardware_concurrency()-1);
 
-    // auto img = render;
+    auto img = render;
 
-    // // write_image(std::cout, img, img_width, img_height);
-    // std::cout << "Saving file...";
-    // write_image_to_file(img, img_width, img_height,"test_e.jpg");
-    // std::cout << " Done !" << std::endl;
+    if(params.verbose)
+        std::cout << "Saving " << params.filename << "..." ;
+    write_image_to_file(img, params.img_width, params.img_height,"test_e.jpg");
+    if(params.verbose)
+        std::cout << " Done !" << std::endl;
 
-    // delete img;
+    delete img;
 
 }
