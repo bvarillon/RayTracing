@@ -18,7 +18,7 @@ Color ray_color(const Ray &r, const Hittable& world, int depth){
     hit_record rec;
     if(depth < effective_depth) effective_depth = depth;
     if(depth <= 0)
-        return Color(0,0,0);
+        return Color(1,0,0);
 
     if(world.hit(r,0.001,INFINITY,rec)){
         Ray scattered;
