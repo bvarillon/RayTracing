@@ -9,6 +9,6 @@ using Color = Vec3;
 
 void write_color(std::ostream &out, const Color& color);
 void write_image(std::ostream &out, const Color[], int width, int height);
-void write_image_to_file(Color const img[] , int const width, int const height, char const file_name[]);
+void write_image_to_file(Color const img[] , int const width, int const height, const std::string file_name);
 
 #endif

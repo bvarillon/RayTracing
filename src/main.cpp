@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
     Vec3 vup = Vec3(0,1,0);
     auto dist_to_focus = (look_from - look_at).length();
     // auto dist_to_focus = 10;
-    auto aperture = 1;
+    auto aperture = 0;
 
     Camera cam(look_from, look_at, vup, 15, params.aspect_ratio, aperture, dist_to_focus);
 
@@ -97,10 +97,14 @@ int main(int argc, char* argv[])
     auto img = render;
 
     if(params.verbose)
+    {
         std::cout << "Saving " << params.filename << "..." ;
-    write_image_to_file(img, params.img_width, params.img_height,"test_e.jpg");
+    }
+    write_image_to_file(img, params.img_width, params.img_height,params.filename);
     if(params.verbose)
+    {
         std::cout << " Done !" << std::endl;
+    }
 
     delete img;
 

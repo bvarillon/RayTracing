@@ -1,6 +1,7 @@
 #include "Color.hpp"
 
 #include <cmath>
+#include <string>
 
 #include "utils.hpp"
 #include "stb_image_write.hpp"
@@ -65,7 +66,7 @@ void color2char(Color const &pixel, char* tab)
  * @param height height of the image.
  * @param file_name name of the file to store the image
 */
-void write_image_to_file(Color const img[] , int const width, int const height, char const file_name[])
+void write_image_to_file(Color const img[] , int const width, int const height, const std::string file_name)
 {
     size_t const length = width * height * 3;
 
@@ -75,5 +76,5 @@ void write_image_to_file(Color const img[] , int const width, int const height, 
     {
         color2char(img[i], &image[i*3]);
     }
-    stbi_write_jpg(file_name,width, height, 3, image, 100);
+    stbi_write_jpg(file_name.c_str(),width, height, 3, image, 100);
 }
