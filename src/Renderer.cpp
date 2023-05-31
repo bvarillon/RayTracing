@@ -12,9 +12,11 @@
 
 using namespace std::chrono_literals;
 
+int effective_depth = INT_MAX;
+
 Color ray_color(const Ray &r, const Hittable& world, int depth){
     hit_record rec;
-
+    if(depth < effective_depth) effective_depth = depth;
     if(depth <= 0)
         return Color(0,0,0);
 
@@ -84,6 +86,7 @@ Color* Renderer::run(int img_height, int img_width, int samples, int max_depth, 
         th.get();
     }  
     log << std::endl << " Done !" << std::endl;
+    log << std::endl << " Effective max depth : " << effective_depth << std::endl;
 
     return img;
 }

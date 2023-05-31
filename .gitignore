@@ -33,6 +33,6 @@
 
 build/
 *.ppm
-*.jpg
-
+bin/*
+!bin/conf.json
 .vscode/
