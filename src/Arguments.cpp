@@ -28,7 +28,7 @@ Arguments pars_args(int argc, char* argv[])
     if (result.count("version"))
     {
         //std::cout << "RayTracing - v" << VERSION << std::endl;
-        std::cout << "RayTracing - v" << GIT_REV << std::endl;
+        std::cout << "RayTracing - " << GIT_TAG << " " << GIT_REV << GIT_BRANCH << std::endl;
         exit(EXIT_SUCCESS);
     }
     if (result.count("help"))
