@@ -3,7 +3,8 @@
 #include <iostream>
 #include <fstream>
 
-#include "Version.hpp"
+//#include "Version.hpp"
+#include "version.h"
 
 #include "nlohmann/json.hpp"
 #include "cxxopts.hpp"
@@ -26,7 +27,8 @@ Arguments pars_args(int argc, char* argv[])
 
     if (result.count("version"))
     {
-        std::cout << "RayTracing - v" << VERSION << std::endl;
+        //std::cout << "RayTracing - v" << VERSION << std::endl;
+        std::cout << "RayTracing - v" << GIT_REV << std::endl;
         exit(EXIT_SUCCESS);
     }
     if (result.count("help"))
