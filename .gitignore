@@ -36,3 +36,4 @@ build/
 bin/*
 !bin/conf.json
 .vscode/
+.cache/
