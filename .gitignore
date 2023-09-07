@@ -36,6 +36,10 @@ build/
 bin/*
 !bin/conf.json
 .vscode/
+<<<<<<< HEAD
 
 Testing/
 neovim.json
+=======
+.cache/
+>>>>>>> c96b4bbb92e93d988d3d74323262b9b94318b163
