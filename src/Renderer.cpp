@@ -18,7 +18,7 @@ Color ray_color(const Ray &r, const Hittable& world, int depth){
     hit_record rec;
     if(depth < effective_depth) effective_depth = depth;
     if(depth <= 0)
-        return Color(1,0,0);
+        return Color(0,0,0);
 
     if(world.hit(r,0.001,INFINITY,rec)){
         Ray scattered;
@@ -48,7 +48,7 @@ Color* Renderer::run(int img_height, int img_width, int samples, int max_depth, 
     std::atomic<int> k(0);
 
     auto fn = [&](const int THREAD){
-        for (int i=img_height-1-THREAD; i>=0; i -=  nb_threads)
+        for (int i=THREAD; i<img_height; i +=  nb_threads)
         {
             for(int j=0; j<img_width; j++)
             {
@@ -70,7 +70,7 @@ Color* Renderer::run(int img_height, int img_width, int samples, int max_depth, 
 
     std::vector<std::future<void>> threads(nb_threads);
     for (int n=0; n<nb_threads ; n++){
-        // log << "thread " << k << " : " << sample_per_thread << " samples" << std::endl;
+        // log << "thread " << n << " : " << sample_per_thread << " samples" << std::endl;
         threads[n] = std::async(fn, n);
     }
 

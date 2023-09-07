@@ -25,5 +25,7 @@ endif(UNIX)
 
 target_link_libraries(RayTracing StbImageWrite Nlohmann cxxopts)
 
+set_target_properties(RayTracing PROPERTIES DEBUG_POSTFIX d)
+
 install(TARGETS RayTracing
         DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin)

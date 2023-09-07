@@ -16,7 +16,7 @@ public:
     Renderer(Camera cam, HittableList scene ): cam_(cam), scene_(scene)
     {}
 
-    Color* run(int img_height, int img_width, int samples, int max_depth, int nb_thread=0, std::ostream &log=std::cout);
+    Color* run(int img_height, int img_width, int samples, int max_depth, int nb_thread=0, std::ostream &log=std::clog);
 
 };
 
