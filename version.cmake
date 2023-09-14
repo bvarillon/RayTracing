@@ -32,21 +32,13 @@ set(VERSION "#define GIT_REV \"${GIT_REV}${GIT_DIFF}\"
 
 if(EXISTS ${CMAKE_BINARY_DIR}/version.h)
     file(READ version.h VERSION_)
-    message("${CMAKE_BINARY_DIR}/version.h exist")
+    message("${CMAKE_BINARY_DIR}/version.h exists")
 else()
     set(VERSION_ "")
-    message("${CMAKE_BINARY_DIR}/version.h doesn't exist")
+    message("${CMAKE_BINARY_DIR}/version.h doesn't exists")
 endif()
 
 if (NOT "${VERSION}" STREQUAL "${VERSION_}")
     file(WRITE ${CMAKE_BINARY_DIR}/version.h "${VERSION}")
     message("new version detected")
-endif()
-
-if(EXISTS ${CMAKE_BINARY_DIR}/version.h)
-    file(READ version.h VERSION_)
-    message("${CMAKE_BINARY_DIR}/version.h exist")
-else()
-    set(VERSION_ "")
-    message("${CMAKE_BINARY_DIR}/version.h doesn't exist")
 endif()
