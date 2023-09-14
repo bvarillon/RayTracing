@@ -26,7 +26,7 @@ string(STRIP "${GIT_TAG}" GIT_TAG)
 string(STRIP "${GIT_BRANCH}" GIT_BRANCH)
 
 set(VERSION "#define GIT_REV \"${GIT_REV}${GIT_DIFF}\"
-    #define GIT_DESCRIBE \"${GIT_DESCRIBE}${GIT_DIFF}\"
+#define GIT_DESCRIBE \"${GIT_DESCRIBE}${GIT_DIFF}\"
 #define GIT_TAG \"${GIT_TAG}\"
 #define GIT_BRANCH \"${GIT_BRANCH}\"")
 

@@ -58,6 +58,7 @@ HittableList random_scene(int size)
     world.add(std::make_shared<Sphere>(Point3(4,1,0),1.0, material3));
 
     return world;
+    
 }
 
 HittableList fixed_scene(int size)
