@@ -25,7 +25,7 @@ add_executable(RayTracing src/main.cpp
                           src/Material.cpp
                           src/Renderer.cpp
                           src/Arguments.cpp
-                        ${CMAKE_CURRENT_BINARY_DIR}/version.h)
+                        ${CMAKE_BINARY_DIR}/version.h)
 if(UNIX)
 target_link_libraries(RayTracing pthread)
 endif(UNIX)
