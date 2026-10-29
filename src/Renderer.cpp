@@ -12,7 +12,9 @@
 #include "utils.hpp"
 #include "Material.hpp"
 
-using namespace std::chrono_literals;
+using namespace std::chrono;
+
+//using namespace std::chrono_literals;
 
 int effective_depth = INT_MAX;
 

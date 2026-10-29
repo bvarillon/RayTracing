@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.5)
-project(RayTracing VERSION 0.0.1)
+cmake_minimum_required(VERSION 4.3)
+project(RayTracing VERSION 0.0.1 LANGUAGES CXX)
 
 
 add_subdirectory(third_party/stb_image_write)
@@ -26,6 +26,7 @@ add_executable(RayTracing src/main.cpp
                           src/Renderer.cpp
                           src/Arguments.cpp
                         ${CMAKE_BINARY_DIR}/version.h)
+target_compile_features(RayTracing PRIVATE cxx_std_17)
 if(UNIX)
 target_link_libraries(RayTracing pthread)
 endif(UNIX)
