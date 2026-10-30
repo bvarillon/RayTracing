@@ -14,7 +14,7 @@ ADD_CUSTOM_COMMAND(
     COMMAND ${CMAKE_COMMAND} -P
             ${CMAKE_CURRENT_SOURCE_DIR}/version.cmake)
 
-include_directories(include "${PROJECT_BINARY_DIR}")
+include_directories(include "${CMAKE_BINARY_DIR}")
 add_executable(RayTracing src/main.cpp
                           src/vec3.cpp
                           src/Sphere.cpp
