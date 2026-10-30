@@ -2,6 +2,7 @@
 
 #include <climits>
 #include <chrono>
+#include <thread>
 
 #include "Color.hpp"
 #include "Point3.hpp"
