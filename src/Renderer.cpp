@@ -1,6 +1,7 @@
 #include "Renderer.hpp"
 
 #include <climits>
+#include <chrono>
 
 #include "Color.hpp"
 #include "Point3.hpp"
@@ -12,9 +13,7 @@
 #include "utils.hpp"
 #include "Material.hpp"
 
-using namespace std::chrono;
-
-//using namespace std::chrono_literals;
+using namespace std::chrono_literals;
 
 int effective_depth = INT_MAX;
 
@@ -81,7 +80,7 @@ Color* Renderer::run(int img_height, int img_width, int samples, int max_depth, 
     while (k < img_height)
     {
         log << "\rWorking:" << (int) (float(k)/img_height*100) << std::flush;
-       std::this_thread::sleep_for(500ms);
+        std::this_thread::sleep_for(500ms);
     }
     log << "\rWorking:" << (int) (float(k)/img_height*100) << std::flush;
 

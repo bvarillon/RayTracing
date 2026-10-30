@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 
 //#include "Version.hpp"
 #include "version.h"
@@ -50,7 +51,7 @@ Arguments pars_args(int argc, char* argv[])
     params.filename = result["filename"].as<std::string>();
     params.size = result["size"].as<int>();
 
-    auto confName = result["conf"].as<std::string>();
+    std::filesystem::path confName = result["conf"].as<std::string>();
     std::ifstream confFile(confName);
     if (!confFile) {
         std::cout << "Impossible d'ouvrir le fichier de configuration : " << confName << std::endl;
