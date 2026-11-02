@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 
 //#include "Version.hpp"
 #include "version.h"
@@ -20,6 +21,7 @@ Arguments pars_args(int argc, char* argv[])
     ("v,verbose", "Active verbose output", cxxopts::value<bool>()->default_value("false"))
     ("filename", "Name of the file to store the image", cxxopts::value<std::string>()->default_value("out.jpg"))
     ("s,size", "Size of the generique scene to render", cxxopts::value<int>()->default_value("11"))
+    ("c,conf","Name of the configuration file to use", cxxopts::value<std::string>()->default_value("conf.json"))
     ;
     option.parse_positional({"filename"});
 
@@ -49,7 +51,12 @@ Arguments pars_args(int argc, char* argv[])
     params.filename = result["filename"].as<std::string>();
     params.size = result["size"].as<int>();
 
-    std::ifstream confFile("conf.json");
+    std::filesystem::path confName = result["conf"].as<std::string>();
+    std::ifstream confFile(confName);
+    if (!confFile) {
+        std::cout << "Impossible d'ouvrir le fichier de configuration : " << confName << std::endl;
+        exit(EXIT_FAILURE);
+    }
     json conf;
     confFile >> conf;
     
