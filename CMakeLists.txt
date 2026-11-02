@@ -9,8 +9,8 @@ add_subdirectory(third_party/cxxopts)
 #configure_file(include/Version.hpp.in Version.hpp)
 
 ADD_CUSTOM_COMMAND(
-    OUTPUT version.h
-           _version.h
+    OUTPUT ${CMAKE_BINARY_DIR}/version.h
+           ${CMAKE_BINARY_DIR}/_version.h
     COMMAND ${CMAKE_COMMAND} -P
             ${CMAKE_CURRENT_SOURCE_DIR}/version.cmake)
 
